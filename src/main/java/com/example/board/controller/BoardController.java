@@ -83,7 +83,9 @@ public class BoardController {
     	
     	// (2) 화면에 보여줄 수 있게 "board"라는 이름으로 담기
     	model.addAttribute("board", board);
-    	
+    	 model.addAttribute("page", page);
+    	 model.addAttribute("keyword", keyword);
+         model.addAttribute("searchType", searchType);
     	// (3) detail.jsp로 이동
     	return "detail";
     }

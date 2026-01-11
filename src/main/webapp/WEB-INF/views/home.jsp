@@ -40,7 +40,7 @@
             <c:forEach items="${boardList}" var="board">
                 <tr>
                     <td style="padding: 10px;">${board.idx}</td>
-                    <td><a href="/board/view?idx=${board.idx}&page=${page}&keyword=${keyword}&searchtype=${searchType}">
+                    <td><a href="/board/view?idx=${board.idx}&page=${page}&keyword=${keyword}&searchType=${searchType}">
 						${board.title}
 						</a>
 					</td>
