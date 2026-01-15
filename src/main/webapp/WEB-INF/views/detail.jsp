@@ -41,7 +41,7 @@
 		</table>
 	
 		<div class="btn-area">
-			<button onclick="location.href='/?page=${page}&keyword=${keyword}&searchType=${searchType}'">목록으로</button>
+			<button onclick="location.href='/?page=${searchDTO.page}&keyword=${searchDTO.keyword}&searchType=${searchDTO.searchType}'">목록으로</button>
 			<button onclick="location.href='/board/update?idx=${board.idx}'">수정</button>
 			<button onclick="if(confirm('정말 삭제하시겠습니까?')) location.href='/board/delete?idx=${board.idx}'">삭제</button>
 		</div>

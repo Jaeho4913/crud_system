@@ -15,12 +15,12 @@
 		<div style="margin-bottom: 10px;">
 			<form action="/" method="get">
 				<select name="searchType">
-				    <option value="title" <c:if test="${searchType == 'title'}">selected</c:if>>제목</option>
-				    <option value="content" <c:if test="${searchType == 'content'}">selected</c:if>>내용</option>
-				    <option value="writer" <c:if test="${searchType == 'writer'}">selected</c:if>>작성자</option>
+				    <option value="title" <c:if test="${response.searchDTO.searchType == 'title'}">selected</c:if>>제목</option>
+				    <option value="content" <c:if test="${response.searchDTO.searchType == 'content'}">selected</c:if>>내용</option>
+				    <option value="writer" <c:if test="${response.searchDTO.searchType == 'writer'}">selected</c:if>>작성자</option>
 				</select>
 
-				<input type="text" name="keyword" value="${keyword}" placeholder="검색어를 입력하세요"/>
+				<input type="text" name="keyword" value="${response.searchDTO.keyword}" placeholder="검색어를 입력하세요"/>
 
 				<button id="searchBtn">검색</button>
 			</form>
@@ -37,10 +37,10 @@
                 <th>작성일</th>
             </tr>
             
-            <c:forEach items="${boardList}" var="board">
+            <c:forEach items="${response.boardList}" var="board">
                 <tr>
                     <td style="padding: 10px;">${board.idx}</td>
-                    <td><a href="/board/view?idx=${board.idx}&page=${page}&keyword=${keyword}&searchType=${searchType}">
+                    <td><a href="/board/view?idx=${board.idx}&page=${response.searchDTO.page}&keyword=${response.searchDTO.keyword}&searchType=${response.searchDTO.searchType}">
 						${board.title}
 						</a>
 					</td>
@@ -52,31 +52,31 @@
 
         <div style="text-align: center; margin-top: 20px;">
             
-            <c:if test="${page > 1}">
-                <a href="/?page=1&searchType=${searchType}&keyword=${keyword}" style="font-weight: bold;">[<<]</a>
+            <c:if test="${response.searchDTO.page > 1}">
+                <a href="/?page=1&searchType=${response.searchDTO.searchType}&keyword=${response.searchDTO.keyword}" style="font-weight: bold;">[<<]</a>
             </c:if>
 
-            <c:if test="${page > 1}">
-                 <a href="/?page=${page - 1}&searchType=${searchType}&keyword=${keyword}">[<]</a>
+            <c:if test="${response.searchDTO.page > 1}">
+                 <a href="/?page=${response.searchDTO.page - 1}&searchType=${response.searchDTO.searchType}&keyword=${response.searchDTO.keyword}">[<]</a>
             </c:if>
 
-            <c:forEach begin="1" end="${totalPage}" var="i">
+            <c:forEach begin="${response.startPage}" end="${response.endPage}" var="i">
                 <c:choose>
-                    <c:when test="${page == i}">
+                    <c:when test="${response.searchDTO.page == i}">
                         <span style="color: red; font-weight: bold; margin: 0 5px;">${i}</span>
                     </c:when>
                     <c:otherwise>
-                        <a href="/?page=${i}&searchType=${searchType}&keyword=${keyword}" style="margin: 0 5px;">[${i}]</a>
+                        <a href="/?page=${i}&searchType=${response.searchDTO.searchType}&keyword=${response.searchDTO.keyword}" style="margin: 0 5px;">[${i}]</a>
                     </c:otherwise>
                 </c:choose>
             </c:forEach>
             
-            <c:if test="${page < totalPage}">
-                 <a href="/?page=${page + 1}&searchType=${searchType}&keyword=${keyword}">[>]</a>
+            <c:if test="${response.searchDTO.page < response.totalPage}">
+                 <a href="/?page=${response.searchDTO.page + 1}&searchType=${response.searchDTO.searchType}&keyword=${response.searchDTO.keyword}">[>]</a>
             </c:if>
 
-            <c:if test="${page < totalPage}">
-                <a href="/?page=${totalPage}&searchType=${searchType}&keyword=${keyword}" style="font-weight: bold;">[>>]</a>
+            <c:if test="${response.searchDTO.page < response.totalPage}">
+                <a href="/?page=${response.totalPage}&searchType=${response.searchDTO.searchType}&keyword=${response.searchDTO.keyword}" style="font-weight: bold;">[>>]</a>
             </c:if>
 
         </div>
