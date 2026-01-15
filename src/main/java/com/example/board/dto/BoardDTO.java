@@ -1,0 +1,36 @@
+package com.example.board.dto;
+
+import java.time.LocalDateTime;
+
+public class BoardDTO {
+    private Long idx;            
+    private String title;        
+    private String content;      
+    private String writer;       
+    private int viewCnt;         
+    private LocalDateTime createdAt; 
+    private LocalDateTime updatedAt; 
+
+    // --- Getter/Setter ---
+
+    public Long getIdx() { return idx; }
+    public void setIdx(Long idx) { this.idx = idx; }
+
+    public String getTitle() { return title; }
+    public void setTitle(String title) { this.title = title; }
+
+    public String getContent() { return content; }
+    public void setContent(String content) { this.content = content; }
+
+    public String getWriter() { return writer; }
+    public void setWriter(String writer) { this.writer = writer; }
+
+    public int getViewCnt() { return viewCnt; }
+    public void setViewCnt(int viewCnt) { this.viewCnt = viewCnt; }
+
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
+
+    public LocalDateTime getUpdatedAt() { return updatedAt; }
+    public void setUpdatedAt(LocalDateTime updatedAt) { this.updatedAt = updatedAt; }
+}
