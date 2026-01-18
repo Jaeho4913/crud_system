@@ -1,19 +1,23 @@
 package com.example.board.controller; // 패키지명
 
-import com.example.board.dto.BoardDTO;
-import com.example.board.mapper.BoardMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping; 
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.InitBinder;
 
 import com.example.board.dto.BoardDTO;
 import com.example.board.dto.PageResponseDTO;
 import com.example.board.dto.SearchDTO;
 import com.example.board.service.BoardService;
+import com.example.board.dto.BoardDTO;
+import com.example.board.validator.BoardValidator;
+import com.example.board.mapper.BoardMapper;
 
 @Controller
 public class BoardController {
@@ -29,11 +33,17 @@ public class BoardController {
 		return "home";	
 	}
 	@GetMapping("/write")
-	public String writeForm() {
+	public String writeForm(@ModelAttribute SearchDTO searchDTO, Model model) {
+		model.addAttribute("boardDTO", new BoardDTO());
 		return "write";
 	}
 	@PostMapping("/board/save")
-	public String save(BoardDTO boardDTO) {
+	public String save(@ModelAttribute BoardDTO boardDTO, BindingResult bindingResult, Model model) {
+		BoardValidator validator = new BoardValidator();
+		validator.validate(boardDTO, bindingResult);
+		if (bindingResult.hasErrors()) {
+			return "write";
+		}
 		boardService.save(boardDTO);
 		return "redirect:/";
 	}
@@ -43,7 +53,7 @@ public class BoardController {
                            Model model) {
 		BoardDTO board = boardService.findById(idx);
 		model.addAttribute("board", board);
-		model.addAttribute("SearchDTO", searchDTO);
+		model.addAttribute("searchDTO", searchDTO);
 		return "detail";
 	}
 	@GetMapping("/board/update")

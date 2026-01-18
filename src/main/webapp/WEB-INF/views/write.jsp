@@ -1,4 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="form" uri ="http://www.springframework.org/tags/form"%>
+<%@ taglib prefix="spring" uri ="http://www.springframework.org/tags"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,23 +14,62 @@
         input, textarea { width: 100%; margin-bottom: 10px; padding: 10px; box-sizing: border-box; }
         button { padding: 10px 20px; }
     </style>
+	
+	
 </head>
 <body>
-    <h2>✏️ 글 작성하기</h2>
+	<spring:hasBindErrors name="boardDTO">
+		<script>
+			var msg="";
+			<c:forEach var="error" items="${errors.allErrors}">
+				msg += "${error.defaultMessage}\n";
+			</c:forEach>
+			alert(msg);
+		</script>
+	</spring:hasBindErrors>
+    <h2>✏️ 글 작성하s기</h2>
 
-    <form action="/board/save" method="post">
+    <form:form action="/board/save" method="post" modelAttribute="boardDTO" onsubmit="return checkForm()">
         
         <label>제목</label>
-        <input type="text" name="title" placeholder="제목을 입력하세요" required>
-        
+        <form:input path="title" id="title" placeholder="제목을 입력하세요" />
+		
         <label>작성자</label>
-        <input type="text" name="writer" placeholder="이름" required>
-        
-        <label>내용</label>
-        <textarea name="content" rows="10" placeholder="내용을 입력하세요"></textarea>
-        
-        <button type="submit">등록</button>
-        <button type="button" onclick="history.back()">취소</button>
-    </form>
+        <form:input path="writer" id="writer" placeholder="작성자" />
+
+		<label>내용</label>
+		<form:textarea path="content" id="content" rows="10" placeholder="내용을 입력하세요" />
+
+		<div style="margin-top: 10px;">
+			<button type="submit">등록</button>
+			<a href="/?page=${searchDTO.page}&searchType=${searchDTO.searchType}&keyword=${searchDTO.keyword}">
+				<button type="button">취소</button>
+			</a>	            
+		</div>    
+	</form:form>
+	
+	<script>
+			function checkForm() {
+			var title = document.getElementById("title");
+					if (title.value.trim() == "") {
+						alert("제목을 입력해주세요.");
+						title.focus();
+						return false;
+						}
+			var writer = document.getElementById("writer");
+					if (writer.value.trim() == "") {
+						alert("작성자를 입력해주세요.");
+						writer.focus();
+						return false;
+						}
+			var content = document.getElementById("content");
+					if (content.value.trim() == "") {
+						alert("본문을 입력해주세요.");
+						content.focus();
+						return false;
+						}
+				return true;
+			}
+			</script>
 </body>
 </html>

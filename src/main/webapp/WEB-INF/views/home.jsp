@@ -26,7 +26,9 @@
 			</form>
 		</div>
         <div style="text-align: right; margin-bottom: 10px;">
-            <button onclick="location.href='/write'">✏️ 글쓰기</button>
+            <button onclick="location.href='/write?page=${response.searchDTO.page}&searchType=${response.searchDTO.searchType}&keyword=${response.searchDTO.keyword}'">
+			✏️ 글쓰기
+			</button>
         </div>
 
         <table border="1" style="width: 100%; border-collapse: collapse; text-align: center;">
