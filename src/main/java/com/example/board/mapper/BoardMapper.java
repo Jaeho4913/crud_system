@@ -1,6 +1,7 @@
 package com.example.board.mapper; // (패키지명은 작성자님꺼 그대로 두세요)
 
 import org.apache.ibatis.annotations.Mapper;
+
 import org.apache.ibatis.annotations.Param; // 👈 ★ 이거 중요! (임포트 필수)
 
 import com.example.board.dto.BoardDTO;
