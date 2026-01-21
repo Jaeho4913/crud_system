@@ -11,6 +11,39 @@
     <div style="width: 800px; margin: 0 auto; text-align: center;">
         
         <h2>📋 게시글 목록</h2>
+		
+		<div style="border: 2px solid #eee; padding: 15px; margin: 20px 0; border-radius: 10px; background-color: #f9f9f9;">
+			<c:choose>
+				<%--로그인을 안 했을 경우 (세션이 비어있음)--%>
+				<c:when test="${empty sessionScope.loginMember}">
+					<form action="/member/login" method="post" style="display: flex; algin-items: center; justify-content: center; gap: 10x">
+						<label>ID : <input type="text" name="userId" required style="width: 150px; margin:0; padding: 5px;"></label>
+						<label>PW : <input typ"password" name="password" required style="width: 150px" margin:0; padding: 5px></label>
+						
+						<button type="submit" style="cursor: pointer; background-color: #007bff; color: white; border: none; padding: 6px 12px;">로그인</button>
+						<button type="button" onclick="location.href= '/member/save'" style="cursor: pointer; background-color: #6c757d; color: white; border: none; padding: 6px 129x;">회원가입</button>
+					</form>
+				</c:when>
+				<%--로그인을 했을 경우 (세션에 정보가 있음)--%>
+				<c:otherwise>
+					<div style="display: flex; justify-content: space-between; align-items: center; padding: 0 20px;">
+						<span style="font-size: 1.1em;">안녕하세요<strong>${sessionScope.loginMember.userName}</strong>님, 환영합니다!<span>
+						
+						<div>								
+							<button onclick="location.href='/write?page=${response.searchDTO.page}&searchType=${response.searchDTO.searchType}&keyword=${response.searchDTO.keyword}'" 
+							        style="cursor: pointer; background-color: #28a745; color: white; border: none; padding: 6px 12px; margin-right: 5px;">
+								✏️ 글쓰기
+							</button>
+						
+							<button onclick="location.href='/member/logout'"
+									style="cursor: pointer; background-color: #dc3545; color: white; border: none; padding: 6px 12px;">
+								로그아웃
+							</button>
+						</div>
+					</div>
+				</c:otherwise>
+			</c:choose>
+		</div>
 		<h3>현재 searchType 값: [${searchType}]</h3>
 		<div style="margin-bottom: 10px;">
 			<form action="/" method="get">
@@ -24,12 +57,6 @@
 
 				<button id="searchBtn">검색</button>
 			</form>
-		</div>
-        <div style="text-align: right; margin-bottom: 10px;">
-            <button onclick="location.href='/write?page=${response.searchDTO.page}&searchType=${response.searchDTO.searchType}&keyword=${response.searchDTO.keyword}'">
-			✏️ 글쓰기
-			</button>
-        </div>
 
         <table border="1" style="width: 100%; border-collapse: collapse; text-align: center;">
             <tr style="background-color: #f2f2f2;">

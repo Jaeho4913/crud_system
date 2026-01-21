@@ -27,7 +27,7 @@
 			alert(msg);
 		</script>
 	</spring:hasBindErrors>
-    <h2>✏️ 글 작성하s기</h2>
+    <h2>✏️ 글 작성하기</h2>
 
     <form:form action="/board/save" method="post" modelAttribute="boardDTO" onsubmit="return checkForm()">
         
