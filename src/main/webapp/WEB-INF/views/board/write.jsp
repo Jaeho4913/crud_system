@@ -35,7 +35,7 @@
         <form:input path="title" id="title" placeholder="제목을 입력하세요" />
 		
         <label>작성자</label>
-        <form:input path="writer" id="writer" placeholder="작성자" />
+        <form:input path="writer" id="writer" placeholder="작성자" readonly="true"/>
 
 		<label>내용</label>
 		<form:textarea path="content" id="content" rows="10" placeholder="내용을 입력하세요" />

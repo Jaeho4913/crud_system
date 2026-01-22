@@ -31,8 +31,16 @@
 	</insert>
 	
 	<select id="findById" parameterType="Long" resultType="com.example.board.dto.BoardDTO">
-		SELECT * FROM members WHERE idx = #{idx}
+		SELECT * FROM tb_board WHERE idx = #{idx}
 	</select>
+	
+	<update id="update" parameterType="com.example.board.dto.BoardDTO">
+		UPDATE tb_board
+		SET title = #{title},
+			content = #{content},
+			updated_at = NOW()
+		where idx = #{idx}
+	</update>
 	
 	<delete id="delete" parameterType="Long">
 		DELETE FROM tb_board WHERE idx = #{idx}

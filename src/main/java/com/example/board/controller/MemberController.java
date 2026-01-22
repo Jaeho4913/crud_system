@@ -22,18 +22,18 @@ public class MemberController {
 	
 	@GetMapping("/save")
 	public String saveForm() {
-		return "save";
+		return "member/save";
 	}
 	
 	@PostMapping("/save")
 	public String save(@ModelAttribute MemberDTO memberDTO) {
 		memberService.save(memberDTO);
-		return "redirect:/member/login";
+		return "member/login";
 	}
 	
 	@GetMapping("/login")
 	public String loginForm() {
-		return "login";
+		return "member/login";
 	}
 	
 	@PostMapping("/login")
@@ -43,7 +43,7 @@ public class MemberController {
 			session.setAttribute("loginMember", loginResult);
 			return "redirect:/";
 		} else {
-			return "login";
+			return "member/login";
 		}
 	}
 	@GetMapping("/logout")
