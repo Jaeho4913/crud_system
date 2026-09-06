@@ -2,9 +2,7 @@ package com.example.board.service;
 
 import java.net.ResponseCache;
 
-
 import java.util.List;
-
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,15 +13,18 @@ import com.example.board.dto.PageResponseDTO;
 import com.example.board.dto.SearchDTO;
 import com.example.board.dto.*;
 import com.example.board.dto.LikeResponseDTO;
+import com.example.board.mapper.BoardGroupMapper;
 import com.example.board.mapper.BoardMapper;
 import com.sun.net.httpserver.Authenticator.Success;
-
 
 @Service
 public class BoardServiceImpl implements BoardService {
 
 	@Autowired
 	private BoardMapper boardMapper;
+
+	@Autowired
+	private BoardGroupMapper boardGroupMapper;
 
 	@Override
 	public PageResponseDTO findAll(SearchDTO searchDTO) {
@@ -34,6 +35,7 @@ public class BoardServiceImpl implements BoardService {
 
 		return new PageResponseDTO(searchDTO, totalCount, list);
 	}
+
 	private void validateSortType(SearchDTO searchDTO) {
 		String sortType = searchDTO.getSortType();
 
@@ -41,16 +43,16 @@ public class BoardServiceImpl implements BoardService {
 			searchDTO.setSortType("latest");
 			return;
 		}
-		switch(sortType) {
-			case "latest":
-			case "oldest":
-			case "viewDesc":
-			case "viewAsc":
-			case "likeDesc":
-			case "likeAsc":
-			case "replyDesc":
-			case "replyAsc":
-				break;
+		switch (sortType) {
+		case "latest":
+		case "oldest":
+		case "viewDesc":
+		case "viewAsc":
+		case "likeDesc":
+		case "likeAsc":
+		case "replyDesc":
+		case "replyAsc":
+			break;
 		default:
 			searchDTO.setSortType("latest");
 		}
@@ -81,38 +83,55 @@ public class BoardServiceImpl implements BoardService {
 	public int countLike(Long idx) {
 		return boardMapper.countLike(idx);
 	}
+
 	@Override
 	public int existsLike(Long idx, String userId) {
 		return boardMapper.existsLike(idx, userId);
 	}
+
 	@Override
 	public List<LikeUserDTO> findLikeUsers(Long idx) {
 		return boardMapper.findLikeUsers(idx);
 	}
+
 	@Override
 	public int countLikeUsers(Long idx) {
 		return boardMapper.countLikeUsers(idx);
 	}
+
 	@Override
-	public List<MemberDTO> findLikeUsersPaging(Long idx, int size, int offset){
+	public List<MemberDTO> findLikeUsersPaging(Long idx, int size, int offset) {
 		return boardMapper.findLikeUsersPaging(idx, size, offset);
 	}
+
 	@Override
 	public void save(BoardDTO boardDTO) {
+		Integer boardGroupIdx = boardDTO.getBoardGroupIdx();
+		if (boardGroupIdx == null) {
+			throw new IllegalArgumentException("게시판을 선택해주세요");
+		}
+		int countActiveGroup = boardGroupMapper.countActiveBoardGroup(boardGroupIdx);
+		if (countActiveGroup == 0) {
+			throw new IllegalArgumentException("존재하지 않는 게시판입니다.");
+		}
 		boardMapper.save(boardDTO);
 	}
+
 	@Override
 	public BoardDTO findById(Long idx) {
 		return boardMapper.findById(idx);
 	}
+
 	@Override
 	public void update(BoardDTO boardDTO) {
 		boardMapper.update(boardDTO);
 	}
+
 	@Override
 	public void delete(Long idx) {
 		boardMapper.delete(idx);
 	}
+
 	@Override
 	public void updateViewCnt(Long idx) {
 		boardMapper.updateViewCnt(idx);

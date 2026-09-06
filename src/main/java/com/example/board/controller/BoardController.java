@@ -1,6 +1,5 @@
 package com.example.board.controller; // 패키지명
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
 
 import java.util.Map;
 import java.util.HashMap;
@@ -25,210 +23,215 @@ import com.example.board.security.CustomUserDetails;
 import com.example.board.service.BoardService;
 import com.example.board.dto.MemberDTO;
 
-
 @Controller
 public class BoardController {
 
-    @Autowired
-    private BoardService boardService;
-    private boolean isLogin(Authentication authentication) {
-    	return authentication != null
-    		&& authentication.isAuthenticated()
-    		&& authentication.getPrincipal() instanceof CustomUserDetails;
-    }
+	@Autowired
+	private BoardService boardService;
 
-    @GetMapping("/")
-    public String home() {
-        return "board/home";
-    }
-    @GetMapping("/board/list")
-    public String boardList() {
-    	return "board/home";
-    }
-    @GetMapping("/write")
-    public String writeForm(@ModelAttribute SearchDTO searchDTO, Model model) {
-        model.addAttribute("searchDTO", searchDTO);
-        return "board/write";
-    }
-    @GetMapping("/board/view")
-    public String viewShell(@ModelAttribute SearchDTO searchDTO, Model model) {
-        model.addAttribute("searchDTO", searchDTO);
-        return "board/detail";
-    }
-    @GetMapping("/board/update")
-    public String updateForm() {
-        return "board/update";
-    }
-    @ResponseBody
-    @GetMapping("/board/getDetail")
-    public ResponseEntity<BoardDTO> getBoardDetail(@RequestParam("idx") Long idx,
-    																												Authentication authentication) {
-        boardService.updateViewCnt(idx);
-        BoardDTO board = boardService.findById(idx);
+	private boolean isLogin(Authentication authentication) {
+		return authentication != null && authentication.isAuthenticated()
+				&& authentication.getPrincipal() instanceof CustomUserDetails;
+	}
 
-        if(board == null) {
-        	return ResponseEntity.notFound().build();
-        }
-        int likeCnt = boardService.countLike(idx);
-        board.setLikeCnt(likeCnt);
+	@GetMapping("/")
+	public String home() {
+		return "board/home";
+	}
 
-        if(isLogin(authentication)) {
-        	String loginUserId = authentication.getName();
-        	int exists = boardService.existsLike(idx, loginUserId);
-        	board.setLikeCheck(exists > 0);
+	@GetMapping("/board/list")
+	public String boardList() {
+		return "board/home";
+	}
 
-        	if(loginUserId.equals(board.getUserId())) {
-        		board.setAuth(true);
-        	} else {
-        		board.setAuth(false);
-        	}
-        } else {
-        	board.setLikeCheck(false);
-        	board.setAuth(false);
-        }
-        return ResponseEntity.ok(board);
-    }
+	@GetMapping("/write")
+	public String writeForm(@ModelAttribute SearchDTO searchDTO, @RequestParam("boardGroupIdx") Integer boardGroupIdx,
+			Model model) {
+		model.addAttribute("searchDTO", searchDTO);
+		model.addAttribute("boardGroupIdx", boardGroupIdx);
+		return "board/write";
+	}
 
-    @ResponseBody
-    @GetMapping("/api/boards")
-    public ResponseEntity<Map<String, Object>> getBoardList(@ModelAttribute SearchDTO searchDTO,
-    																													Authentication authentication) {
-        Map<String, Object> result = new HashMap<>();
-        result.put("boardData", boardService.findAll(searchDTO));
+	@GetMapping("/board/view")
+	public String viewShell(@ModelAttribute SearchDTO searchDTO, Model model) {
+		model.addAttribute("searchDTO", searchDTO);
+		return "board/detail";
+	}
 
-        if(isLogin(authentication)) {
-        	CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        	MemberDTO member = userDetails.getMemberDTO();
+	@GetMapping("/board/update")
+	public String updateForm() {
+		return "board/update";
+	}
 
-        	result.put("isLogin", true);
+	@ResponseBody
+	@GetMapping("/board/getDetail")
+	public ResponseEntity<BoardDTO> getBoardDetail(@RequestParam("idx") Long idx, Authentication authentication) {
+		boardService.updateViewCnt(idx);
+		BoardDTO board = boardService.findById(idx);
 
-        	String name = member.getUserName();
+		if (board == null) {
+			return ResponseEntity.notFound().build();
+		}
+		int likeCnt = boardService.countLike(idx);
+		board.setLikeCnt(likeCnt);
 
-        	if(name == null || name.isBlank()) {
-        		name = member.getUserId();
-        	}
-        	result.put("loginName", name);
-        }else {
-        	result.put("isLogin", false);
-        }
-    return ResponseEntity.ok(result);
-}
+		if (isLogin(authentication)) {
+			String loginUserId = authentication.getName();
+			int exists = boardService.existsLike(idx, loginUserId);
+			board.setLikeCheck(exists > 0);
 
-@ResponseBody
-@PostMapping("/board/like")
-public ResponseEntity<LikeResponseDTO> btnLike(@RequestParam("idx") Long idx,
-																												Authentication authentication) {
-    LikeResponseDTO response = new LikeResponseDTO();
+			if (loginUserId.equals(board.getUserId())) {
+				board.setAuth(true);
+			} else {
+				board.setAuth(false);
+			}
+		} else {
+			board.setLikeCheck(false);
+			board.setAuth(false);
+		}
+		return ResponseEntity.ok(board);
+	}
 
-    if(!isLogin(authentication)) {
-        response.setStatus("loginRequired");
-        response.setLikeCheck(false);
-        response.setLikeCnt(0);
-        return ResponseEntity.ok(response);
-    }
-    String loginUserId = authentication.getName();
-    LikeResponseDTO result = boardService.btnLike(idx, loginUserId);
-    return ResponseEntity.ok(result);
-}
+	@ResponseBody
+	@GetMapping("/api/boards")
+	public ResponseEntity<Map<String, Object>> getBoardList(@ModelAttribute SearchDTO searchDTO,
+			Authentication authentication) {
+		Map<String, Object> result = new HashMap<>();
+		result.put("boardData", boardService.findAll(searchDTO));
 
-@ResponseBody
-@GetMapping("/board/likeUsers")
-public Map<String, Object> likeUsers(
-		@RequestParam("idx") Long idx,
-		@RequestParam(value = "page", defaultValue = "1") int page,
-		@RequestParam(value = "size", defaultValue = "10") int size) {
-	Map<String, Object> resultMap = new HashMap<>();
+		if (isLogin(authentication)) {
+			CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+			MemberDTO member = userDetails.getMemberDTO();
 
-	if(idx == null) {
-		resultMap.put("status", "fail");
-		resultMap.put("message", "게시글 번호가 없습니다");
+			result.put("isLogin", true);
+
+			String name = member.getUserName();
+
+			if (name == null || name.isBlank()) {
+				name = member.getUserId();
+			}
+			result.put("loginName", name);
+		} else {
+			result.put("isLogin", false);
+		}
+		return ResponseEntity.ok(result);
+	}
+
+	@ResponseBody
+	@PostMapping("/board/like")
+	public ResponseEntity<LikeResponseDTO> btnLike(@RequestParam("idx") Long idx, Authentication authentication) {
+		LikeResponseDTO response = new LikeResponseDTO();
+
+		if (!isLogin(authentication)) {
+			response.setStatus("loginRequired");
+			response.setLikeCheck(false);
+			response.setLikeCnt(0);
+			return ResponseEntity.ok(response);
+		}
+		String loginUserId = authentication.getName();
+		LikeResponseDTO result = boardService.btnLike(idx, loginUserId);
+		return ResponseEntity.ok(result);
+	}
+
+	@ResponseBody
+	@GetMapping("/board/likeUsers")
+	public Map<String, Object> likeUsers(@RequestParam("idx") Long idx,
+			@RequestParam(value = "page", defaultValue = "1") int page,
+			@RequestParam(value = "size", defaultValue = "10") int size) {
+		Map<String, Object> resultMap = new HashMap<>();
+
+		if (idx == null) {
+			resultMap.put("status", "fail");
+			resultMap.put("message", "게시글 번호가 없습니다");
+			return resultMap;
+		}
+		if (page < 1) {
+			page = 1;
+		}
+		if (size < 10) {
+			size = 10;
+		}
+		int totalCount = boardService.countLikeUsers(idx);
+		int totalPage = (int) Math.ceil((double) totalCount / page);
+
+		if (totalPage > 0 && page > totalPage) {
+			page = totalPage;
+		}
+		int offset = (page - 1) * size;
+		List<MemberDTO> likeUsers = boardService.findLikeUsersPaging(idx, size, offset);
+
+		resultMap.put("status", "success");
+		resultMap.put("likeUsers", likeUsers);
+		resultMap.put("page", page);
+		resultMap.put("size", size);
+		resultMap.put("totalCount", totalCount);
+		resultMap.put("totalPage", totalPage);
+
 		return resultMap;
 	}
-	if(page < 1) {
-		page = 1;
-	}
-	if(size < 10) {
-		size = 10;
-	}
-	int totalCount=boardService.countLikeUsers(idx);
-	int totalPage = (int)Math.ceil((double)totalCount / page);
 
-	if(totalPage > 0 && page > totalPage) {
-		page = totalPage;
-	}
-	int offset = (page - 1) * size;
-	List<MemberDTO> likeUsers = boardService.findLikeUsersPaging(idx, size, offset);
+	@ResponseBody
+	@PostMapping("/board/save")
+	public ResponseEntity<String> save(BoardDTO boardDTO, Authentication authentication) {
 
-	resultMap.put("status", "success");
-	resultMap.put("likeUsers", likeUsers);
-	resultMap.put("page", page);
-	resultMap.put("size", size);
-	resultMap.put("totalCount", totalCount);
-	resultMap.put("totalPage", totalPage);
+		if (!isLogin(authentication)) {
+			return ResponseEntity.status(401).body("loginRequired");
+		}
+		CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+		MemberDTO member = userDetails.getMemberDTO();
+		boardDTO.setUserId(member.getUserId());
+		boardDTO.setWriter(member.getUserName());
 
-	return resultMap;
-}
-
-@ResponseBody
-@PostMapping("/board/save")
-public ResponseEntity<String> save(BoardDTO boardDTO,
-													  Authentication authentication) {
-
-    if(!isLogin(authentication)) {
-       return ResponseEntity.status(401).body("loginRequired");
-    }
-    CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-    MemberDTO member = userDetails.getMemberDTO();
-    boardDTO.setUserId(member.getUserId());
-    boardDTO.setWriter(member.getUserName());
-
-    boardService.save(boardDTO);
-    return ResponseEntity.ok("success");
-}
-@ResponseBody
-@PostMapping("/board/update")
-public ResponseEntity<String> update(BoardDTO boardDTO,
-														  Authentication authentication) {
-
-	if(!isLogin(authentication)) {
-		return ResponseEntity.ok("fail");
-	}
-	if(boardDTO.getIdx() == null) {
-		return ResponseEntity.ok("fail");
-	}
-	BoardDTO originalBoard = boardService.findById(boardDTO.getIdx());
-
-	if(originalBoard == null) {
-		return ResponseEntity.ok("fail");
-	}
-	String loginUserId = authentication.getName();
-	if(!loginUserId.equals(originalBoard.getUserId())) {
-		return ResponseEntity.ok("fail");
-	}
-    boardService.update(boardDTO);
-    return ResponseEntity.ok("success");
-}
-@ResponseBody
-@GetMapping("/board/delete")
-public ResponseEntity<String> delete(@RequestParam("idx") Long idx,
-																							Authentication authentication) {
-
-	if(!isLogin(authentication)) {
-		return ResponseEntity.status(401).body("loginRequired");
+		try {
+			boardService.save(boardDTO);
+			return ResponseEntity.ok("success");
+		} catch (IllegalArgumentException e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
 	}
 
-	BoardDTO originalBoard = boardService.findById(idx);
+	@ResponseBody
+	@PostMapping("/board/update")
+	public ResponseEntity<String> update(BoardDTO boardDTO, Authentication authentication) {
 
-	if(originalBoard == null) {
-		return ResponseEntity.ok("fail");
+		if (!isLogin(authentication)) {
+			return ResponseEntity.ok("fail");
+		}
+		if (boardDTO.getIdx() == null) {
+			return ResponseEntity.ok("fail");
+		}
+		BoardDTO originalBoard = boardService.findById(boardDTO.getIdx());
+
+		if (originalBoard == null) {
+			return ResponseEntity.ok("fail");
+		}
+		String loginUserId = authentication.getName();
+		if (!loginUserId.equals(originalBoard.getUserId())) {
+			return ResponseEntity.ok("fail");
+		}
+		boardService.update(boardDTO);
+		return ResponseEntity.ok("success");
 	}
-	String loginUserId = authentication.getName();
-	if(!loginUserId.equals(originalBoard.getUserId())) {
-		return ResponseEntity.ok("fail");
+
+	@ResponseBody
+	@GetMapping("/board/delete")
+	public ResponseEntity<String> delete(@RequestParam("idx") Long idx, Authentication authentication) {
+
+		if (!isLogin(authentication)) {
+			return ResponseEntity.status(401).body("loginRequired");
+		}
+
+		BoardDTO originalBoard = boardService.findById(idx);
+
+		if (originalBoard == null) {
+			return ResponseEntity.ok("fail");
+		}
+		String loginUserId = authentication.getName();
+		if (!loginUserId.equals(originalBoard.getUserId())) {
+			return ResponseEntity.ok("fail");
+		}
+		boardService.delete(idx);
+		return ResponseEntity.ok("success");
 	}
-    boardService.delete(idx);
-    return ResponseEntity.ok("success");
-}
 
 }
-

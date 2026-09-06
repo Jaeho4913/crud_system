@@ -127,8 +127,8 @@
 	</select>
 
 	<insert id="save" parameterType="com.example.board.dto.BoardDTO">
-			INSERT INTO tb_board (title, content, writer, user_id,  board_pw, view_cnt, created_at, updated_at)
-			Values (#{title}, #{content}, #{writer}, #{userId}, #{boardPw}, 0, NOW(), NOW())
+			INSERT INTO tb_board (title, content, writer, user_id,  board_pw, view_cnt, created_at, updated_at, board_group_idx)
+			Values (#{title}, #{content}, #{writer}, #{userId}, #{boardPw}, 0, NOW(), NOW(), #{boardGroupIdx})
 	</insert>
 
 

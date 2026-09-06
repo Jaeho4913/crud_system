@@ -5,20 +5,21 @@ import lombok.Data;
 
 @Data
 public class BoardDTO {
-    private Long idx;
-    private String title;
-    private String content;
-    private String writer;
-    private String userId;
-    private int viewCnt;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    private String boardPw;
-    private boolean isAuth;
-    private boolean isGuest;
-    private int likeCnt;
-    private boolean likeCheck;
-    private int replyCnt;
+	private Long idx;
+	private String title;
+	private String content;
+	private String writer;
+	private String userId;
+	private int viewCnt;
+	private LocalDateTime createdAt;
+	private LocalDateTime updatedAt;
+	private String boardPw;
+	private boolean isAuth;
+	private boolean isGuest;
+	private int likeCnt;
+	private boolean likeCheck;
+	private int replyCnt;
+	private Integer boardGroupIdx;
 }
 //    // --- Getter/Setter ---
 //
@@ -54,4 +55,3 @@ public class BoardDTO {
 //
 //    public String getUserId() {return userId;}
 //    public void setUserId(String userId) {this.userId= userId;}
-
